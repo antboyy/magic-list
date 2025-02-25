@@ -1,0 +1,22 @@
+{
+    "timeZone": "Europe/London",
+    "dependencies": {
+        "enabledAdvancedServices": []
+    },
+    "exceptionLogging": "STACKDRIVER",
+    "runtimeVersion": "V8",
+    "oauthScopes": [
+        "openid",
+        "https://www.googleapis.com/auth/script.scriptapp",
+        "https://www.googleapis.com/auth/cloud-platform.read-only",
+        "https://www.googleapis.com/auth/generative-language.retriever",
+        "https://www.googleapis.com/auth/script.external_request",
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/cloud-platform",
+        "https://apps-apis.google.com/a/feeds",
+        "https://www.googleapis.com/auth/userinfo.email"
+    ],
+    "executionApi": {
+        "access": "DOMAIN"
+    }
+}
