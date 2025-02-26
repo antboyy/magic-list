@@ -1,53 +1,54 @@
-function test() {
-
-    const response = callGemini('"London" is a city. I have a small family. Provide a list of things to do when to visit "London" ?');
-    console.log(response);
+function testPrompt(){
+  console.log(callGemini('give me a pizza recipe with bbq sauce'))
 }
+
+
+const MODEL = 'gemini-1.5-flash-001'
+// const MODEL = 'gemini-1.5-pro-001'
+const REGION = 'us-central1'
+const PROJECT_ID = "igneous-nucleus-318922"
+
+
 
 function callGemini(prompt) {
 
-    const GEMINI_API_KEY = scriptProperties.getProperty('GEMINI_API_KEY');
+  console.log('Calling Gemini on Vertex AI ')
 
-    const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + GEMINI_API_KEY
-    console.log(prompt)
-    const payload = {
-        "contents": [{
-            "parts": [{ "text": prompt }]
-        }], "generationConfig": {
-            "stopSequences": [
-                ""
-            ],
-            "temperature": 0.9,
-            "maxOutputTokens": 1000,
-        }
+
+  const url = `https://${REGION}-aiplatform.googleapis.com/v1/projects/${PROJECT_ID}/locations/${REGION}/publishers/google/models/${MODEL}:generateContent`; 
+
+  const payload = {
+  "contents": {
+    "role": "user",
+    "parts": {
+        "text": prompt
     }
-
-
-    const response = sendJSONRESTRequest(url, 'POST', payload)
-    return response.candidates[0].content.parts[0].text;
+  },
+  "generation_config": {
+    "temperature": 0.5,
+    "topP": 0.8,
+    "topK": 40
+  }
 }
 
+  const options = {
+    method: "POST",
+    headers: {
+        Authorization: "Bearer " + ScriptApp.getOAuthToken(),
+      },
+    contentType: "application/json",
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  };
 
-function sendJSONRESTRequest(url, method, payload) {
-    var headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json"
-    };
+  const response = UrlFetchApp.fetch(url, options);
+  const responseCode = response.getResponseCode();
+  const responseContent = JSON.parse(response.getContentText());
 
-    var options = {
-        "method": method,
-        "headers": headers,
-        "payload": JSON.stringify(payload)
-    };
-
-    var response = UrlFetchApp.fetch(url, options);
-
-    // Check the response status code
-    if (response.getResponseCode() != 200) {
-        throw new Error("Error sending request: " + response.getResponseCode());
-    }
-
-    var content = JSON.parse(response.getContentText());
-    return content
+  Logger.log("Response code: " + responseCode);
+  return parseGeminiResponse(responseContent);
 }
 
+function parseGeminiResponse(response){
+  return response.candidates[0].content.parts[0].text
+}
