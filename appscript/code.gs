@@ -1,7 +1,3 @@
-const scriptProperties = PropertiesService.getScriptProperties();
-const ui = SpreadsheetApp.getUi();
-
-
 function onOpen(e) {
   
   ui.createMenu('Magic ✨')
@@ -10,16 +6,23 @@ function onOpen(e) {
     .addSubMenu(ui.createMenu('Settings')
       .addItem('Set Prompt', 'runSetPrompt'))
     .addToUi();
-  if(scriptProperties.getProperty('PROMPT') == null) {
-    scriptProperties.setProperty('PROMPT',"1")
-}
+
+  if (checkValid(scriptProperties.getProperty('PROMPT')) == false){
+    scriptProperties.setProperty('PROMPT',"1");
+  }
 }
 
+const scriptProperties = PropertiesService.getScriptProperties();
+const ui = SpreadsheetApp.getUi();
 
 function runSetPrompt(){
-  response = ui.prompt("What's the prompt number?");
+  response = ui.prompt("What's the prompt number? (1-3)");
   prompt_number = response.getResponseText();
-  scriptProperties.setProperty('PROMPT',prompt_number );
+  if (checkValid(prompt_number)==false){
+    SpreadsheetApp.getUi().alert("Invalid prompt number");
+  } else {
+    scriptProperties.setProperty('PROMPT',prompt_number);
+  }
 }
 
 function runGemini() {
@@ -41,4 +44,14 @@ function runGemini() {
       }
     }
   });
+}
+
+function checkValid(value){
+    if (value !== null && ["1", "2", "3"].includes(value)) {
+    return true;
+    
+} else {
+  Logger.log("Invalid prompt number");
+  return false;
+}
 }
