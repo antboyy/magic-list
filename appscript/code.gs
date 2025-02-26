@@ -1,6 +1,7 @@
 const scriptProperties = PropertiesService.getScriptProperties();
 const ui = SpreadsheetApp.getUi();
 
+
 function onOpen(e) {
   
   ui.createMenu('Magic ✨')
@@ -9,7 +10,11 @@ function onOpen(e) {
     .addSubMenu(ui.createMenu('Settings')
       .addItem('Set Prompt', 'runSetPrompt'))
     .addToUi();
+  if(scriptProperties.getProperty('PROMPT') == null) {
+    scriptProperties.setProperty('PROMPT',"1")
 }
+}
+
 
 function runSetPrompt(){
   response = ui.prompt("What's the prompt number?");
